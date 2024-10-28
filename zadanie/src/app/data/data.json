@@ -1,0 +1,36 @@
+[
+  {
+    "id": 1,
+    "title": "Zakup Spożywczy",
+    "amount": 150,
+    "category": "Jedzenie",
+    "date": "2024-04-10",
+    "description": "Zakupy w sklepie Lidl zrobione przez Marlenę"
+  },
+  {
+    "id": 2,
+    "title": "Opłata za internet",
+    "amount": 80,
+    "category": "Rachunki",
+    "date": "2024-04-05",
+    "description": "Miesięczna opłata za intetnet"
+  },
+  {
+    "id": 3,
+    "title": "Bilet na koncert",
+    "amount": 250,
+    "category": "Rozrywka",
+    "date": "2024-04-20",
+    "description": "Bilety na koncert ulubionego zespołu"
+  },
+  {
+    "id": 4,
+    "title": "nowa kanapa",
+    "amount": 1000,
+    "category": "Meble",
+    "date": "2024-10.28",
+    "description": "Nowa kanapa do salonu kupiona w Agata Meble"
+  }
+
+
+]
