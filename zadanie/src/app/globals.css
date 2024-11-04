@@ -15,15 +15,9 @@
   h2{
     font-size: 30px;
   }
-  select{
-    color: black;
-  }
-  .input{
-    color: black;
-  }
-  .error{
-    color: red;
-  }
+ select, .input, .error, textarea{
+   color: #0a0a0a;
+ }
 }
 
 body {

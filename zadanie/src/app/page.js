@@ -23,7 +23,7 @@ export default function Home() {
         <div>
             <AddAmountForm
                 categories = {categories}
-                onNewAmount={(title, amount, category, date) => {
+                onNewAmount={(title, amount, category, date, description) => {
                     const newAmount = [
                         ...amounts,
                         {
@@ -31,7 +31,8 @@ export default function Home() {
                             title,
                             amount,
                             category,
-                            date
+                            date,
+                            description
                         }
                     ];
                     setAmounts(newAmount);

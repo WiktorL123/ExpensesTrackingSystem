@@ -12,7 +12,10 @@ const validationSchema = Yup.object({
         .required('Kategoria wymagana!'),
     date: Yup.date()
         .typeError('NIEPRAWIDŁOWA DATA')
-        .required('Data wymagana!')
+        .required('Data wymagana!'),
+    description: Yup.string().min(10, 'Opis jest za krótki')
+        .max(50, 'Opis jest za długi!')
+        .required('Wprowadź opis!!!')
 });
 
 export default function AddAmountForm({categories, onNewAmount = f => f }) {
@@ -20,7 +23,8 @@ export default function AddAmountForm({categories, onNewAmount = f => f }) {
         title: '',
         amount: 1,
         category: '',
-        date: ''
+        date: '',
+        description: ''
     };
 
     const handleSubmit = (values, { resetForm }) => {
@@ -28,7 +32,8 @@ export default function AddAmountForm({categories, onNewAmount = f => f }) {
             values.title,
             values.amount,
             values.category,
-            values.date
+            values.date,
+            values.description
         );
         resetForm();
     };
@@ -64,6 +69,10 @@ export default function AddAmountForm({categories, onNewAmount = f => f }) {
                         <ErrorMessage name="date" component="div" className="error" />
                     </div>
 
+                    <div>
+                        <Field as={'textArea'} placeholder={'opis'} name={'description'}></Field>
+                        <ErrorMessage name={'description'} component={'div'} className={'error'}/>
+                    </div>
                     <button
                         className="button"
                         type="submit"
@@ -73,6 +82,7 @@ export default function AddAmountForm({categories, onNewAmount = f => f }) {
                     </button>
                 </Form>
             )}
+
         </Formik>
     );
 }
