@@ -6,10 +6,12 @@ import AmountList from './Components/AmountList';
 import Filter from './Components/Filter';
 import AddAmountForm from './Components/AddAmountForm';
 import { v4 } from 'uuid';
+import Modal from './Components/Modal'
 
 export default function Home() {
     const [amounts, setAmounts] = useState(amountData);
     const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedAmount, setSelectedAmount] = useState(null)
 
     const categories = [...new Set(amounts.map(item => item.category))];
 
@@ -46,7 +48,18 @@ export default function Home() {
                     const newAmounts = amounts.filter(amount => amount.id !== id);
                     setAmounts(newAmounts);
                 }}
+                onShowDetails={setSelectedAmount}
             />
+
+            {selectedAmount && (
+                <Modal onClose={()=>setSelectedAmount(null)
+                }>
+                   <h1>{selectedAmount.title}</h1>
+                    <p>{selectedAmount.description}</p>
+
+                </Modal>
+            )}
+
         </div>
     );
 }
