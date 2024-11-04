@@ -16,15 +16,15 @@ export default function Amount({ id, title, amount, category, date, description,
             <p>produkt z kategorii {category}, kwota wydana: {amount} zł, data: {date}</p>
 
 
-            {showModal && (
-                <div style={modalStyles.overlay}>
-                    <div style={modalStyles.modal}>
-                        <h2>Szczegóły</h2>
-                        <p>{description}</p>
-                        <button onClick={() => setShowModal(false)}>Zamknij</button> {}
-                    </div>
-                </div>
-            )}
+            {/*{showModal && (*/}
+            {/*    <div style={modalStyles.overlay}>*/}
+            {/*        <div style={modalStyles.modal}>*/}
+            {/*            <h2>Szczegóły</h2>*/}
+            {/*            <p>{description}</p>*/}
+            {/*            <button onClick={() => setShowModal(false)}>Zamknij</button> {}*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*)}*/}
         </section>
     );
 }
