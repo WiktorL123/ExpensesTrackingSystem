@@ -1,4 +1,4 @@
-
+'use client';
 import Amount from "@/app/Components/Amount";
 export default function AmountList({amounts = [], onRemoveAmount = f=>f, onShowDetails = f=>f} ) {
     if (!amounts.length) return <div>No amounts here!</div>

@@ -1,4 +1,4 @@
-// AddAmountForm.js
+'use client';
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from 'yup';
@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 const validationSchema = Yup.object({
     title: Yup.string().min(3, 'Tytuł jest za krótki')
         .required('Tytuł jest wymagany'),
-    amount: Yup.number().positive('Tylko liczby dodatnie')
+    amount: Yup.number().positive('Tylko ligiczby dodatnie')
         .required('Kwota wymagana'),
     category: Yup.string()
         .required('Kategoria wymagana!'),
