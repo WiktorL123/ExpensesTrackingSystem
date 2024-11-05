@@ -10,7 +10,7 @@ const validationSchema = Yup.object({
         .required('Kwota wymagana'),
     category: Yup.string()
         .required('Kategoria wymagana!'),
-    date: Yup.date()
+    date: Yup.date().min(new Date, 'data nie moze byc wczesniejsza')
         .typeError('NIEPRAWIDŁOWA DATA')
         .required('Data wymagana!'),
     description: Yup.string().min(10, 'Opis jest za krótki')
@@ -65,12 +65,12 @@ export default function AddAmountForm({categories, onNewAmount = f => f }) {
                     </Field>
 
                     <div>
-                        <Field className="input" name="date" type="date" />
+                        <Field className="input accent-amber-50" name="date" type="date"/>
                         <ErrorMessage name="date" component="div" className="error" />
                     </div>
 
                     <div>
-                        <Field as={'textArea'} placeholder={'opis'} name={'description'}></Field>
+                        <Field as={'textarea'} placeholder={'opis'} name={'description'}></Field>
                         <ErrorMessage name={'description'} component={'div'} className={'error'}/>
                     </div>
                     <button
