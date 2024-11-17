@@ -1,6 +1,6 @@
 'use client';
 import Amount from "@/app/Components/Amount";
-export default function AmountList({amounts = [], onRemoveAmount = f=>f, onShowDetails = f=>f} ) {
+export default function AmountList({amounts = [], onRemoveAmount = f=>f, onShowDetails = f=>f, onEditAmount = f=>f} ) {
     if (!amounts.length) return <div>No amounts here!</div>
     return (
         <div>
@@ -9,6 +9,7 @@ export default function AmountList({amounts = [], onRemoveAmount = f=>f, onShowD
                 {...amount}
                 onRemove={onRemoveAmount}
                 onShow = {()=>onShowDetails(amount)}
+                onEdit={()=>onEditAmount(amount)}
 
                 />
             )}

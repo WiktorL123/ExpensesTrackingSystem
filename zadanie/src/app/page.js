@@ -7,11 +7,14 @@ import Filter from './Components/Filter';
 import AddAmountForm from './Components/AddAmountForm';
 import { v4 } from 'uuid';
 import Modal from './Components/Modal'
+import EditAmountForm from "@/app/Components/EditAmountForm";
 
 export default function Home() {
     const [amounts, setAmounts] = useState(amountData);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [selectedAmount, setSelectedAmount] = useState(null)
+    const [editingAmount , setEditingAmount] = useState(null)
+
 
     const categories = [...new Set(amounts.map(item => item.category))];
 
@@ -19,6 +22,18 @@ export default function Home() {
         ? amounts.filter(item => item.category === selectedCategory)
         : amounts;
 
+    const handleEdit = (amount)=>{
+        setEditingAmount(amount)
+    }
+
+    const handleSaveEdit = (updatedAmount)=>{
+        setAmounts(amounts.map(a=>a.id===updatedAmount.id ? updatedAmount  : a))
+        setEditingAmount(null)
+    };
+
+    const handleCancelEdit = ()=>{
+        setEditingAmount(null)
+    };
     return (
         <div>
             <AddAmountForm
@@ -31,7 +46,7 @@ export default function Home() {
                             title,
                             amount,
                             category,
-                            date,
+                            date: new Date(date),
                             description
                         }
                     ];
@@ -50,6 +65,7 @@ export default function Home() {
                     setAmounts(newAmounts);
                 }}
                 onShowDetails={setSelectedAmount}
+                onEditAmount={handleEdit}
             />
 
             {selectedAmount && (
@@ -60,6 +76,14 @@ export default function Home() {
 
                 </Modal>
             )}
+            {editingAmount && (
+                <EditAmountForm
+                amount={editingAmount}
+                onSave={handleSaveEdit}
+                onCancel={handleCancelEdit}
+                />
+            )}
+
 
         </div>
     );

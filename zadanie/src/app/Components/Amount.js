@@ -1,9 +1,10 @@
 'use client';
 import { FaTrash } from 'react-icons/fa';
+import {FaPencilAlt} from 'react-icons/fa';
 
 
-export default function Amount({ id, title, amount, category, date, description, onRemove = f => f, onShow= f=>f }) {
-
+export default function Amount({ id, title, amount, category, date, description, onRemove = f => f, onShow= f=>f, onEdit = f=>f }) {
+    const formattedDate = date ? new Date(date).toLocaleDateString() : "";
     return (
         <section>
             <h1>{title}</h1>
@@ -13,7 +14,8 @@ export default function Amount({ id, title, amount, category, date, description,
             <button onClick={() => onShow(amount)}> {}
                 Pokaż szczegóły
             </button>
-            <p>produkt z kategorii {category}, kwota wydana: {amount} zł, data: {date}</p>
+            <button onClick={onEdit}><FaPencilAlt/></button>
+            <p>produkt z kategorii {category}, kwota wydana: {amount} zł, data: {formattedDate}</p>
 
 
 

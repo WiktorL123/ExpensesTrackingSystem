@@ -18,6 +18,9 @@
  select, .input, .error, textarea{
    color: #0a0a0a;
  }
+ .add-form-input{
+   color: black;
+ }
 }
 
 body {

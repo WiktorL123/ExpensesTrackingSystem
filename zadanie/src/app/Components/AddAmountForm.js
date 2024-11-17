@@ -18,14 +18,14 @@ const validationSchema = Yup.object({
         .required('Wprowadź opis!!!')
 });
 
+const initialValues = {
+    title: '',
+    amount: 1,
+    category: '',
+    date: '',
+    description: ''
+};
 export default function AddAmountForm({categories, onNewAmount = f => f }) {
-    const initialValues = {
-        title: '',
-        amount: 1,
-        category: '',
-        date: '',
-        description: ''
-    };
 
     const handleSubmit = (values, { resetForm }) => {
         onNewAmount(
