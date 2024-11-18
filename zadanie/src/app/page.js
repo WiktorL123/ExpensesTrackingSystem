@@ -1,4 +1,3 @@
-// Home.js
 'use client';
 import amountData from './data/data.json';
 import { useState } from 'react';
