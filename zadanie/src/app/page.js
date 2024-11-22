@@ -8,42 +8,17 @@ import EditAmountForm from './Components/EditAmountForm';
 
 export default function Home() {
     const {
-        amounts,
-        selectedCategory,
         selectedAmount,
         editingAmount,
-        setSelectedAmount,
     } = useAmountsContext();
-
-
-    const filteredAmounts = selectedCategory === "all"
-        ? amounts
-        : amounts.filter(item => item.category === selectedCategory);
-
 
     return (
         <div>
-            <AddAmountForm
-            />
-            <Filter
-
-            />
-
-            <AmountList
-                amounts={filteredAmounts}
-
-            />
-            {selectedAmount && (
-                <Modal onClose={() => setSelectedAmount(null)}>
-                    <h1>{selectedAmount.title}</h1>
-                    <p>{selectedAmount.description}</p>
-                </Modal>
-            )}
-            {editingAmount && (
-                <EditAmountForm
-
-                />
-            )}
+            <AddAmountForm/>
+            <Filter/>
+            <AmountList/>
+            {selectedAmount && (<Modal ></Modal>)}
+            {editingAmount && (<EditAmountForm/>)}
         </div>
     );
 }

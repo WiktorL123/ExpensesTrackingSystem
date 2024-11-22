@@ -1,21 +1,24 @@
 'use client';
 import React from 'react';
 import {AiOutlineClose} from "react-icons/ai";
+import {useAmountsContext} from "@/app/providers/AmountProvider";
 
-export default function Modal({ children, onClose }) {
+export default function Modal() {
+    const {selectedAmount, setSelectedAmount} = useAmountsContext()
     const handleBackdropClick = (event) => {
         if (event.target === event.currentTarget) {
-            onClose();
+            setSelectedAmount(null)
         }
     };
 
     return (
         <div style={backdropStyle} onClick={handleBackdropClick}>
             <div style={modalStyle}>
-                <button onClick={onClose} style={closeButtonStyle}>
+                <button onClick={()=>setSelectedAmount(null)} style={closeButtonStyle}>
                     <AiOutlineClose size={20}/>
                 </button>
-                {children}
+                <h1>{selectedAmount.title}</h1>
+                <p>{selectedAmount.description}</p>
             </div>
         </div>
     );

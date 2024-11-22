@@ -1,15 +1,15 @@
 'use client';
 import Amount from "@/app/Components/Amount";
 import {useAmountsContext} from "@/app/providers/AmountProvider";
-export default function AmountList({amounts}) {
-   const {removeAmount, setSelectedAmount, setEditingAmount} = useAmountsContext()
+export default function AmountList() {
+   const {removeAmount, setSelectedAmount, setEditingAmount, filteredAmounts} = useAmountsContext()
 
-    if (!amounts.length) return <div>No amounts here!</div>
+    if (!filteredAmounts.length) return <div>No amounts here!</div>
 
     return (
         <div>
 
-            {amounts.map(amount => <Amount
+            {filteredAmounts.map(amount => <Amount
                 key={amount.id}
                 {...amount}
                 onRemove={removeAmount}

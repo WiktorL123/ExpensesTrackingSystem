@@ -16,7 +16,9 @@ export default function AmountProvider({ children }) {
 
     const categories = [...new Set(amounts.map(item => item.category))];
 
-
+    const filteredAmounts = selectedCategory === "all"
+        ? amounts
+        : amounts.filter(item => item.category === selectedCategory);
     const addAmount = (newAmount) => setAmounts([...amounts, newAmount]);
 
     const removeAmount = (id) => setAmounts(amounts.filter(amount => amount.id !== id));
@@ -43,6 +45,7 @@ export default function AmountProvider({ children }) {
 
     return (
         <AmountsContext.Provider value={{
+            filteredAmounts,
             categories,
             amounts,
             selectedCategory,
