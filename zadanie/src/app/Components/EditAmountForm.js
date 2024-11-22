@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { FaSave, FaTimes } from "react-icons/fa";
+import {useAmountsContext} from "@/app/providers/AmountProvider";
 
 
 function validateStringValue(title) {
     console.log(title.length)
     if (!title) return "Pole nie może być puste";
-    //if (title.length < 4) return "Nazwa wydatku jest za krótka";
     if (title.length > 50) return "Nazwa wydatku jest za długa";
 }
 
@@ -45,32 +45,33 @@ function validateAmount(amount) {
 }
 
 
-export default function EditAmountForm({ amount, onSave, onCancel }) {
+export default function EditAmountForm() {
+    const {editingAmount, handleSaveEdit, handleCancelEdit} = useAmountsContext()
 
 
     const [formState, setFormState] = useState({
-        title: amount?.title || "",
-        amount: amount?.amount || "",
-        category: amount?.category || "",
-        date: amount.date
-            ? (typeof amount.date === "string" ? amount.date : amount.date.toISOString().substring(0, 10))
+        title: editingAmount?.title || "",
+        amount: editingAmount?.amount || "",
+        category: editingAmount?.category || "",
+        date: editingAmount.date
+            ? (typeof editingAmount.date === "string" ? editingAmount.date : editingAmount.date.toISOString().substring(0, 10))
             : "",
-        description: amount?.description || "",
-    });;
+        description: editingAmount?.description || "",
+    })
 
     const [errors, setErrors] = useState({});
 
     const handleSave = () => {
         if (handleValidate()) {
             const updatedAmount = {
-                ...amount,
+                ...editingAmount,
                 title: formState.title,
                 amount: parseFloat(formState.amount),
                 category: formState.category,
-                date: formState.date ? new Date(formState.date) : null, // Konwersja daty
+                date: formState.date ? new Date(formState.date) : null,
                 description: formState.description,
             };
-            onSave(updatedAmount);
+            handleSaveEdit(updatedAmount);
         }
     };
 
@@ -148,7 +149,7 @@ export default function EditAmountForm({ amount, onSave, onCancel }) {
             <button onClick={handleSave}>
                 <FaSave /> Zapisz
             </button>
-            <button onClick={onCancel}>
+            <button onClick={handleCancelEdit}>
                 <FaTimes /> Anuluj
             </button>
         </div>

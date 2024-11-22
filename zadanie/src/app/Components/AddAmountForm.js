@@ -5,6 +5,7 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from 'yup';
+import {useAmountsContext} from "@/app/providers/AmountProvider";
 
 const validationSchema = Yup.object({
     title: Yup.string().min(3, 'Tytuł jest za krótki')
@@ -28,10 +29,11 @@ const initialValues = {
     date: '',
     description: ''
 };
-export default function AddAmountForm({categories, onNewAmount = f => f }) {
+export default function AddAmountForm() {
+    const {handleNewAmount, categories} = useAmountsContext()
 
     const handleSubmit = (values, { resetForm }) => {
-        onNewAmount(
+        handleNewAmount(
             values.title,
             values.amount,
             values.category,

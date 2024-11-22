@@ -5,7 +5,6 @@ import Filter from './Components/Filter';
 import AddAmountForm from './Components/AddAmountForm';
 import Modal from './Components/Modal';
 import EditAmountForm from './Components/EditAmountForm';
-import {v4} from "uuid";
 
 export default function Home() {
     const {
@@ -13,54 +12,26 @@ export default function Home() {
         selectedCategory,
         selectedAmount,
         editingAmount,
-        setSelectedCategory,
         setSelectedAmount,
-        setEditingAmount,
-        addAmount,
-        removeAmount,
-        updateAmount
     } = useAmountsContext();
 
-    const categories = [...new Set(amounts.map(item => item.category))];
 
-    const filteredAmounts = selectedCategory
-        ? amounts.filter(item => item.category === selectedCategory)
-        : amounts;
+    const filteredAmounts = selectedCategory === "all"
+        ? amounts
+        : amounts.filter(item => item.category === selectedCategory);
 
-    const handleEdit = (amount) => setEditingAmount(amount);
-
-    const handleSaveEdit = (updatedAmount) => {
-        updateAmount(updatedAmount);
-        setEditingAmount(null);
-    };
-
-    const handleCancelEdit = () => setEditingAmount(null);
 
     return (
         <div>
             <AddAmountForm
-                categories={categories}
-                onNewAmount={(title, amount, category, date, description) => {
-                    addAmount({
-                        id: v4(),
-                        title,
-                        amount,
-                        category,
-                        date: new Date(date),
-                        description
-                    });
-                }}
             />
             <Filter
-                categories={categories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
+
             />
+
             <AmountList
                 amounts={filteredAmounts}
-                onRemoveAmount={removeAmount}
-                onShowDetails={setSelectedAmount}
-                onEditAmount={handleEdit}
+
             />
             {selectedAmount && (
                 <Modal onClose={() => setSelectedAmount(null)}>
@@ -70,9 +41,7 @@ export default function Home() {
             )}
             {editingAmount && (
                 <EditAmountForm
-                    amount={editingAmount}
-                    onSave={handleSaveEdit}
-                    onCancel={handleCancelEdit}
+
                 />
             )}
         </div>
