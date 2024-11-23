@@ -7,12 +7,12 @@ export default function Filter() {
 
     return (
         <div>
-            <label style={labelStyle} htmlFor="category-filter">Filtruj według kategorii:</label>
+            <label  htmlFor="category-filter">Filtruj według kategorii:</label>
             <select
                 id="category-filter"
                 value={selectedCategory}
                 onChange={e => {
-                    console.log(e.target.value);
+                   console.log(typeof selectedCategory)
                     setSelectedCategory(e.target.value);
                 }}
             >
@@ -27,6 +27,3 @@ export default function Filter() {
     );
 }
 
-const labelStyle = {
-    // Dodaj style, jeśli potrzebujesz
-};

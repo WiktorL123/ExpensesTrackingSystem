@@ -17,7 +17,7 @@ export default function Home() {
             <AddAmountForm/>
             <Filter/>
             <AmountList/>
-            {selectedAmount && (<Modal ></Modal>)}
+            {selectedAmount && (<Modal></Modal>)}
             {editingAmount && (<EditAmountForm/>)}
         </div>
     );

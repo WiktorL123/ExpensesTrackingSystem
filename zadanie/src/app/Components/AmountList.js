@@ -1,8 +1,20 @@
 'use client';
 import Amount from "@/app/Components/Amount";
 import {useAmountsContext} from "@/app/providers/AmountProvider";
+import {useLayoutEffect, useState} from "react";
 export default function AmountList() {
-   const {removeAmount, setSelectedAmount, setEditingAmount, filteredAmounts} = useAmountsContext()
+    const [highlightedAmount, setHighlightedAmount] = useState(null);
+   const {removeAmount, setSelectedAmount, setEditingAmount, filteredAmounts, selectedAmount} = useAmountsContext()
+
+    useLayoutEffect(() => {
+        if (filteredAmounts.length > 0) {
+
+            const latestAmount = filteredAmounts.reduce((latest, current) => {
+                return new Date(current.date) > new Date(latest.date) ? current : latest;
+            }, filteredAmounts[0]);
+            setHighlightedAmount(latestAmount);
+        }
+    }, [filteredAmounts]);
 
     if (!filteredAmounts.length) return <div>No amounts here!</div>
 
@@ -12,6 +24,7 @@ export default function AmountList() {
             {filteredAmounts.map(amount => <Amount
                 key={amount.id}
                 {...amount}
+                isHighlighted= {highlightedAmount?.id === amount.id}
                 onRemove={removeAmount}
                 onShow = {()=>setSelectedAmount(amount)}
                 onEdit={()=>setEditingAmount(amount)}

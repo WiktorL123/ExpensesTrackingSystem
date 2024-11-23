@@ -1,7 +1,7 @@
 'use client';
 
-import { createContext, useContext, useState } from "react";
-import amountData from '../data/data.json';
+import {createContext, useContext, useEffect, useState} from "react";
+
 import {v4} from "uuid";
 
 const AmountsContext = createContext();
@@ -9,10 +9,27 @@ const AmountsContext = createContext();
 export const useAmountsContext = () => useContext(AmountsContext);
 
 export default function AmountProvider({ children }) {
-    const [amounts, setAmounts] = useState(amountData);
-    const [selectedCategory, setSelectedCategory] = useState("all");  // Ustawienie domyślnej wartości na "all"
+
+
+    const [amounts, setAmounts] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("all");
     const [selectedAmount, setSelectedAmount] = useState(null);
     const [editingAmount, setEditingAmount] = useState(null);
+
+    useEffect(() => {
+        const loadData = async () => {
+            const data = await import('../data/data.json')
+            return data.default
+        }
+        loadData()
+            .then(data=>{
+                setAmounts(data)
+            })
+            .catch(err=>{
+                console.log(err)
+                setAmounts('błąd')
+            })
+    }, []);
 
     const categories = [...new Set(amounts.map(item => item.category))];
 

@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "title": "Zakup Spożywczy",
+    "title": "eletronika",
     "amount": 150,
     "category": "Jedzenie",
     "date": "2024-04-10",
@@ -28,9 +28,15 @@
     "title": "nowa kanapa",
     "amount": 1000,
     "category": "Meble",
-    "date": "2024-10.28",
+    "date": "2024-10-28",
     "description": "Nowa kanapa do salonu kupiona w Agata Meble"
+  },
+  {
+    "id": 5,
+    "title": "agent",
+    "amount": 47,
+    "category": "bitch",
+    "date": "2024-11.18",
+    "description": "aaaaaa"
   }
-
-
 ]
