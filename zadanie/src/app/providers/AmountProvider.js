@@ -1,6 +1,6 @@
 'use client';
 
-import {createContext, useContext, useEffect, useState} from "react";
+import {createContext, useContext, useEffect, useLayoutEffect, useState} from "react";
 
 import {v4} from "uuid";
 
@@ -15,7 +15,8 @@ export default function AmountProvider({ children }) {
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [selectedAmount, setSelectedAmount] = useState(null);
     const [editingAmount, setEditingAmount] = useState(null);
-
+    const [notificationMessage, setNotificationMessage] = useState('');
+    const [showNotification, setShowNotification] = useState(false);
     useEffect(() => {
         const loadData = async () => {
             const data = await import('../data/data.json')
@@ -31,17 +32,40 @@ export default function AmountProvider({ children }) {
             })
     }, []);
 
+    useLayoutEffect(() => {
+        if (notificationMessage){
+            setShowNotification(true)
+            const timer = setTimeout(() => {
+                setShowNotification(false)
+                setNotificationMessage('')
+            }, 3000)
+            return ()=>clearTimeout(timer)
+        }
+
+    }, [notificationMessage]);
+
+
     const categories = [...new Set(amounts.map(item => item.category))];
 
     const filteredAmounts = selectedCategory === "all"
         ? amounts
         : amounts.filter(item => item.category === selectedCategory);
-    const addAmount = (newAmount) => setAmounts([...amounts, newAmount]);
+    const addAmount = (newAmount) => {
+        setAmounts([...amounts, newAmount]);
+        setNotificationMessage("Nowy wydatek został dodany.");
+    };
 
-    const removeAmount = (id) => setAmounts(amounts.filter(amount => amount.id !== id));
+    const removeAmount = (id) => {
+        setAmounts(amounts.filter(amount => amount.id !== id));
+        setNotificationMessage("Wydatk został usunięty.");
+    };
 
-    const updateAmount = (updatedAmount) =>
+
+    const updateAmount = (updatedAmount) => {
         setAmounts(amounts.map(amount => amount.id === updatedAmount.id ? updatedAmount : amount));
+        setNotificationMessage("Wydatk został edytowany.");
+    };
+
     const handleSaveEdit = (updatedAmount) => {
         updateAmount(updatedAmount);
         setEditingAmount(null);
@@ -57,6 +81,7 @@ export default function AmountProvider({ children }) {
             date: new Date(date),
             description
         });
+
 
     }
 
@@ -76,7 +101,9 @@ export default function AmountProvider({ children }) {
             updateAmount,
             handleSaveEdit,
             handleCancelEdit,
-            handleNewAmount
+            handleNewAmount,
+            notificationMessage,
+            showNotification
         }}>
             {children}
         </AmountsContext.Provider>
