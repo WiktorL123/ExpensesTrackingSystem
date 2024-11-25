@@ -59,15 +59,17 @@ export default function AddAmountForm() {
                         <Field className="input" name="amount" type="number" placeholder="Podaj wydatek" />
                         <ErrorMessage name="amount" component="div" className="error" />
                     </div>
-                    <Field as={"select"} name={"category"}>
-                        <option value='' label={'wybierz kategoryje'}></option>
-                        {categories.map((cat, index)=>{
-                            return (
-                                <option key={index} value={cat}>{cat}</option>
-                            )
-                        })}
+                    {/*<Field as={"select"} name={"category"}>*/}
+                    {/*    <option value='' label={'wybierz kategoryje'}></option>*/}
+                    {/*    {categories.map((cat, index)=>{*/}
+                    {/*        return (*/}
+                    {/*            <option key={index} value={cat}>{cat}</option>*/}
+                    {/*        )*/}
+                    {/*    })}*/}
 
-                    </Field>
+                    {/*</Field>*/}
+                    <Field className ='input' name = "category" type="text" placeholder ="kategoria"></Field>
+                    <ErrorMessage name={'category'} component={'div'} className={'error'}/>
 
                     <div>
                         <Field className="input accent-amber-50" name="date" type="date"/>
