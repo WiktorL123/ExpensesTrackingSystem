@@ -1,26 +1,24 @@
-/* globals.css */
 
-/* Ładowanie podstawowych stylów z Tailwind */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Zmienne dla motywu */
+
 :root {
     --background-color: white;
     --text-color: black;
 }
 
-/* Styl dla ciemnego motywu */
 [data-theme='dark'] {
     --background-color: #1a202c;
     --text-color: white;
 }
 
-/* Ustawienia podstawowe */
+
 body {
     background-color: var(--background-color);
     color: var(--text-color);
 }
 
-/* Możesz także używać Tailwind CSS klas w całym projekcie */
+

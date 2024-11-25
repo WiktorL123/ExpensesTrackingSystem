@@ -25,6 +25,7 @@ export default function Amount({
             <h1 className="text-lg font-semibold">{title}</h1>
             <p className="text-gray-700">{category}</p>
             <p className="text-gray-500 text-sm">{formattedDate}</p>
+            <p className='text-gray-500 text-sm'>{amount} zł</p>
             <div className="flex items-center justify-between mt-2">
                 <button
                     className="text-red-500 hover:text-red-700"
