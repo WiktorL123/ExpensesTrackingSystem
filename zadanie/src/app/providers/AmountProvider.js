@@ -47,7 +47,7 @@ export default function AmountProvider({ children }) {
             const timer = setTimeout(() => {
                 setShowNotification(false);
                 setNotificationMessage('');
-            }, 3000);
+            }, 1000);
             return () => clearTimeout(timer);
         }
     }, [notificationMessage]);
@@ -56,37 +56,72 @@ export default function AmountProvider({ children }) {
         try {
             const res = await fetch('http://localhost:8080/expenses', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify(newAmount),
             });
-            if (!res.ok) throw new Error('Błąd podczas dodawania wydatku');
-            const createdAmount = await res.json();
-            setAmounts([...amounts, createdAmount]);
+
+            if (!res.ok) {
+                throw new Error('Nie udało się dodać wydatku');
+            }
+
+
+            const updatedData = await res.json();
+            setAmounts(amounts.map((amount) =>
+                amount.id === updatedData.id ? updatedData : amount
+            ));
+
+
             setNotificationMessage("Nowy wydatek został dodany.");
-        } catch (err) {
-            setError(err.message || "Wystąpił błąd podczas dodawania wydatku.");
+        } catch (error) {
+            console.error(error);
+            setNotificationMessage("Wystąpił błąd podczas dodawania wydatku.");
         }
+
     };
 
     const updateAmount = async (updatedAmount) => {
+        const formattedAmount = {
+            ...updatedAmount,
+            date: updatedAmount.date
+                ? new Date(updatedAmount.date).toISOString().split('T')[0]
+                : undefined,
+        };
+
         try {
-            const res = await fetch(`http://localhost:8080/expenses/${updatedAmount.id}`, {
+            const response = await fetch(`http://localhost:8080/expenses/${updatedAmount.id}`,
+                {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedAmount),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formattedAmount),
             });
-            if (!res.ok) throw new Error('Błąd podczas edycji wydatku');
-            const data = await res.json();
-            setAmounts(amounts.map(amount => (amount.id === data.id ? data : amount)));
-            setNotificationMessage("Wydatek został zaktualizowany.");
+
+            if (!response.ok) {
+                throw new Error('Nie udało się zaktualizować wydatku.');
+            }
+
+            const updatedData = await response.json();
+            setAmounts(amounts.map((amount) =>
+                amount.id === updatedData.id ? updatedData : amount
+            ));
+            setNotificationMessage('Wydatek został zaktualizowany.');
+
+
+
         } catch (err) {
-            setError(err.message || "Wystąpił błąd podczas edycji wydatku.");
+            console.error(err);
+            setNotificationMessage('Błąd podczas aktualizacji wydatku.');
         }
-    };
+    }
 
     const removeAmount = async (id) => {
         try {
-            const res = await fetch(`http://localhost:8080/expenses/${id}`, { method: 'DELETE' });
+            const res = await fetch(`http://localhost:8080/expenses/${id}`,
+                { method: 'DELETE'
+                });
             if (!res.ok) throw new Error('Błąd podczas usuwania wydatku');
             setAmounts(amounts.filter(amount => amount.id !== id));
             setNotificationMessage("Wydatek został usunięty.");
@@ -108,10 +143,17 @@ export default function AmountProvider({ children }) {
             title,
             amount,
             category,
-            date: new Date(date),
+            date: date ? new Date(date).toISOString().split('T')[0] : undefined, // format "YYYY-MM-DD"
             description,
         };
         addAmount(newAmount);
+    };
+
+
+    const handleBackdropClick = (event) => {
+        if (event.target === event.currentTarget) {
+            setSelectedAmount(null)
+        }
     };
 
     const categories = [...new Set(amounts.map(item => item.category))];
@@ -130,6 +172,7 @@ export default function AmountProvider({ children }) {
             setSelectedCategory,
             setSelectedAmount,
             setEditingAmount,
+            handleBackdropClick,
             addAmount,
             removeAmount,
             updateAmount,

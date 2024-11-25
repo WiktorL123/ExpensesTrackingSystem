@@ -6,6 +6,7 @@ import AddAmountForm from './Components/AddAmountForm';
 import Modal from './Components/Modal';
 import EditAmountForm from './Components/EditAmountForm';
 
+
 export default function Home() {
     const {
         selectedAmount,
@@ -14,6 +15,7 @@ export default function Home() {
 
     return (
         <div>
+
             <AddAmountForm/>
             <Filter/>
             <AmountList/>

@@ -1,52 +1,27 @@
-import {useEffect} from "react";
+'use client';
+import { useEffect } from "react";
+import {theme} from "../../../tailwind.config";
 
-export default function NotificationModal({message, onClose}){
+export default function NotificationModal({ message, onClose }) {
     useEffect(() => {
         const timer = setTimeout(() => {
-            onClose()
-        }, 3000)
-
-        return () => clearTimeout(timer)
+            onClose();
+        }, 3000);
+        return () => clearTimeout(timer);
     }, [message, onClose]);
 
     return (
-        <div style={modalStyle}>
-            <div style={modalContentStyle}>
+        <div className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50`}>
+            <div
+                className={`p-4 rounded-lg shadow-lg relative max-w-sm w-full text-center ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-700"}`}
+            >
                 <p>{message}</p>
-                <button onClick={onClose} style={closeButtonStyle}>X</button>
+                <button
+                    className={`absolute top-2 right-2 text-gray-500 hover:text-gray-700 ${theme === "dark" ? "text-white" : "text-gray-500"}`}
+                    onClick={onClose}
+                >
+                    X
+                </button>
             </div>
-        </div>
-    )
-
+        </div>);
 }
-const modalStyle = {
-    position: 'fixed',
-    top: '0',
-    left: '0',
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 1000,
-};
-
-const modalContentStyle = {
-    backgroundColor: 'white',
-    padding: '20px',
-    borderRadius: '5px',
-    textAlign: 'center',
-    maxWidth: '400px',
-    width: '100%',
-};
-
-const closeButtonStyle = {
-    position: 'absolute',
-    top: '5px',
-    right: '5px',
-    backgroundColor: 'transparent',
-    border: 'none',
-    fontSize: '20px',
-    cursor: 'pointer',
-};

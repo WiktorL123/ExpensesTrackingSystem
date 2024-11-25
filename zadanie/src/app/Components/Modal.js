@@ -1,62 +1,29 @@
 'use client';
 import React from 'react';
-import {AiOutlineClose} from "react-icons/ai";
-import {useAmountsContext} from "@/app/providers/AmountProvider";
+import { AiOutlineClose } from 'react-icons/ai';
+import { useAmountsContext } from "@/app/providers/AmountProvider";
 
 export default function Modal() {
-    const {selectedAmount, setSelectedAmount} = useAmountsContext()
-    const handleBackdropClick = (event) => {
-        if (event.target === event.currentTarget) {
-            setSelectedAmount(null)
-        }
-    };
+    const { selectedAmount, setSelectedAmount, handleBackdropClick } = useAmountsContext();
 
     return (
-        <div style={backdropStyle} onClick={handleBackdropClick}>
-            <div style={modalStyle}>
-                <button onClick={()=>setSelectedAmount(null)} style={closeButtonStyle}>
-                    <AiOutlineClose size={20}/>
+        <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+            onClick={handleBackdropClick}
+        >
+            <div
+                className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg relative w-80 max-w-full"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <button
+                    onClick={() => setSelectedAmount(null)}
+                    className="absolute top-3 right-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+                >
+                    <AiOutlineClose size={20} />
                 </button>
-                <h1>{selectedAmount.title}</h1>
-                <p>{selectedAmount.description}</p>
+                <h1 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">{selectedAmount.title}</h1>
+                <p className="text-gray-600 dark:text-gray-300">{selectedAmount.description}</p>
             </div>
         </div>
     );
 }
-
-
-const backdropStyle = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000,
-    color: 'black'
-};
-
-const modalStyle = {
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '5px',
-    width: '400px',
-    maxWidth: '90%',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-    position: 'relative',
-    color: 'black'
-};
-
-const closeButtonStyle = {
-    position: 'absolute',
-    top: '10px',
-    right: '10px',
-    backgroundColor: 'transparent',
-    border: 'none',
-    fontSize: '16px',
-    cursor: 'pointer',
-    color: 'black'
-};

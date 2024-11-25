@@ -2,6 +2,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import AmountProvider from "@/app/providers/AmountProvider";
 
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -25,7 +26,9 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
       <AmountProvider>
-          {children}
+
+              {children}
+
       </AmountProvider>
 
       </body>

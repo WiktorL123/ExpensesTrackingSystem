@@ -14,10 +14,9 @@ const validationSchema = Yup.object({
         .required('Kwota wymagana'),
     category: Yup.string()
         .required('Kategoria wymagana!'),
-    date: Yup.date().min(new Date, 'data nie moze byc wczesniejsza')
-        .typeError('NIEPRAWIDŁOWA DATA')
+    date: Yup.date().typeError('NIEPRAWIDŁOWA DATA')
         .required('Data wymagana!'),
-    description: Yup.string().min(10, 'Opis jest za krótki')
+    description: Yup.string().min(5, 'Opis jest za krótki')
         .max(50, 'Opis jest za długi!')
         .required('Wprowadź opis!!!')
 });
@@ -30,7 +29,7 @@ const initialValues = {
     description: ''
 };
 export default function AddAmountForm() {
-    const {handleNewAmount, categories} = useAmountsContext()
+    const {handleNewAmount} = useAmountsContext()
 
     const handleSubmit = (values, { resetForm }) => {
         handleNewAmount(
@@ -50,46 +49,107 @@ export default function AddAmountForm() {
             onSubmit={handleSubmit}
         >
             {({ dirty, isValid }) => (
-                <Form>
+                <Form className="bg-white shadow-md rounded-lg p-6 space-y-4 max-w-md mx-auto">
                     <div>
-                        <Field className="input" name="title" type="text" placeholder="Podaj tytuł" />
-                        <ErrorMessage name="title" component="div" className="error" />
-                    </div>
-                    <div>
-                        <Field className="input" name="amount" type="number" placeholder="Podaj wydatek" />
-                        <ErrorMessage name="amount" component="div" className="error" />
-                    </div>
-                    {/*<Field as={"select"} name={"category"}>*/}
-                    {/*    <option value='' label={'wybierz kategoryje'}></option>*/}
-                    {/*    {categories.map((cat, index)=>{*/}
-                    {/*        return (*/}
-                    {/*            <option key={index} value={cat}>{cat}</option>*/}
-                    {/*        )*/}
-                    {/*    })}*/}
-
-                    {/*</Field>*/}
-                    <Field className ='input' name = "category" type="text" placeholder ="kategoria"></Field>
-                    <ErrorMessage name={'category'} component={'div'} className={'error'}/>
-
-                    <div>
-                        <Field className="input accent-amber-50" name="date" type="date"/>
-                        <ErrorMessage name="date" component="div" className="error" />
+                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                            Tytuł
+                        </label>
+                        <Field
+                            id="title"
+                            name="title"
+                            type="text"
+                            placeholder="Podaj tytuł"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black placeholder-black"
+                        />
+                        <ErrorMessage
+                            name="title"
+                            component="div"
+                            className="text-red-500 text-sm mt-1"
+                        />
                     </div>
 
                     <div>
-                        <Field as={'textarea'} placeholder={'opis'} name={'description'}></Field>
-                        <ErrorMessage name={'description'} component={'div'} className={'error'}/>
+                        <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+                            Kwota
+                        </label>
+                        <Field
+                            id="amount"
+                            name="amount"
+                            type="number"
+                            placeholder="Podaj kwotę"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black placeholder-black"
+                        />
+                        <ErrorMessage
+                            name="amount"
+                            component="div"
+                            className="text-red-500 text-sm mt-1"
+                        />
                     </div>
+
+                    <div>
+                        <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                            Kategoria
+                        </label>
+                        <Field
+                            id="category"
+                            name="category"
+                            type="text"
+                            placeholder="Podaj kategorię"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black placeholder-black"
+                        />
+                        <ErrorMessage
+                            name="category"
+                            component="div"
+                            className="text-red-500 text-sm mt-1"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+                            Data
+                        </label>
+                        <Field
+                            id="date"
+                            name="date"
+                            type="date"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
+                        />
+                        <ErrorMessage
+                            name="date"
+                            component="div"
+                            className="text-red-500 text-sm mt-1"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                            Opis
+                        </label>
+                        <Field
+                            as="textarea"
+                            id="description"
+                            name="description"
+                            placeholder="Wprowadź opis"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 h-20 resize-none text-black placeholder-black"
+                        />
+                        <ErrorMessage
+                            name="description"
+                            component="div"
+                            className="text-red-500 text-sm mt-1"
+                        />
+                    </div>
+
                     <button
-                        className="button"
                         type="submit"
+                        className={`w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                            !dirty || !isValid ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                         disabled={!dirty || !isValid}
                     >
                         Dodaj
                     </button>
                 </Form>
             )}
-
         </Formik>
-    );
+    )
 }
