@@ -41,7 +41,7 @@ function isValidDate(date) {
 function validateDate(date) {
     if (!date) return "Pole nie może być puste";
     if (!isValidDate(date)) return "Data jest niepoprawna";
-    if (new Date(date) < new Date()) return "Data nie może być wcześniejsza niż obecna";
+
 }
 
 
