@@ -35,7 +35,7 @@ export default function AddAmountForm() {
         handleNewAmount(
             values.title,
             values.amount,
-            values.category,
+            values.category.toLowerCase(),
             values.date,
             values.description
         );
