@@ -23,6 +23,7 @@ export default function Amount({
             } rounded shadow-md hover:shadow-lg transition-shadow duration-200`}
         >
             <h1 className="text-lg font-semibold">{title}</h1>
+            <p className={'text-gray-700'} > {id}</p>
             <p className="text-gray-700">{category}</p>
             <p className="text-gray-500 text-sm">{formattedDate}</p>
             <p className='text-gray-500 text-sm'>{amount} zł</p>

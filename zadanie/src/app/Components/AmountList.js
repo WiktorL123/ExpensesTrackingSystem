@@ -30,6 +30,7 @@ export default function AmountList() {
                 />
             )}
             <div className="flex flex-wrap gap-4 justify-center">
+
                 {filteredAmounts.map((amount, index) => (
                     <Amount
                         key={amount.id }
