@@ -23,25 +23,31 @@ export default function AmountProvider({ children }) {
     const { performAction: removeAmountAction } = useApiActions('http://localhost:8080');
 
     const BASE_URL = 'http://localhost:8080/expenses';
+
     const fetchData = async () => {
         setLoading(true);
         try {
-            const res = await fetch(BASE_URL)
-            if (!res.ok) throw new Error(res.message)
-            const data = await res.json()
-            setAmounts(data)
-        }
-        catch (error) {
-            setError(error)
-            console.error(error)
-        }
-        finally {
+            const res = await fetch(BASE_URL);
+            if (!res.ok) throw new Error(res.message);
+            const data = await res.json();
+
+            // Przechowywanie danych z prawdziwymi ID
+            const amountsWithBackendId = data.map((item) => ({
+                ...item,
+                id: item.id,  // ID z backendu
+            }));
+            setAmounts(amountsWithBackendId);
+        } catch (error) {
+            setError(error);
+            console.error(error);
+        } finally {
             setLoading(false);
         }
-    }
-    useEffect(()=>{
-        fetchData()
-    }, [])
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     useEffect(() => {
         localStorage.setItem('amounts', JSON.stringify(amounts));
@@ -69,21 +75,21 @@ export default function AmountProvider({ children }) {
             setAmounts((prev) => {
                 if (prev.some(amount => amount.id === newAmount.id)) {
                     console.log("Detected duplicate ID:", newAmount.id);
-                    return prev
+                    return prev;
                 }
-                return [...prev, newAmount];
-            })
+                return [...prev, response];  // Użyj odpowiedzi z backendu, aby uzyskać prawdziwe ID
+            });
             setNotificationMessage("Nowy wydatek został dodany.");
         } catch {
             setNotificationMessage("Wystąpił błąd podczas dodawania wydatku.");
         }
-    }
+    };
 
     const updateAmount = async (updatedAmount) => {
         console.log("Updating amount with data:", updatedAmount);
 
         try {
-            console.log("Updating amount with data:", JSON.stringify(updatedAmount));
+            // Wysyłamy prawdziwe ID do backendu
             const response = await editAmountAction(`/expenses/${updatedAmount.id}`, {
                 method: 'PUT',
                 body: updatedAmount,
@@ -115,9 +121,8 @@ export default function AmountProvider({ children }) {
                     ? updatedAmount.date
                     : new Date(updatedAmount.date).toISOString().substring(0, 10))
                 : "",
-        }
-        updateAmount(formattedAmount);
-        console.log(formattedAmount)
+        };
+        updateAmount(formattedAmount);  // Używamy prawdziwego ID w tej funkcji
         setEditingAmount(null);
     };
 
@@ -125,14 +130,14 @@ export default function AmountProvider({ children }) {
 
     const handleNewAmount = (title, amount, category, date, description) => {
         const newAmount = {
-            id: v4(),
+            id: v4(),  // Generowanie UUID tylko do UI
             title,
             amount,
             category,
             date: date ? new Date(date).toISOString().split('T')[0] : undefined,
             description,
         };
-        console.log("Generated ID: ", newAmount.id);
+        console.log("Generated ID for UI: ", newAmount.id);
         addAmount(newAmount);
     };
 
