@@ -6,7 +6,7 @@ import {AiOutlineClose} from "react-icons/ai";
 
 function validateStringValue(stringValue) {
     console.log(stringValue.length)
-    if (stringValue.length<3)  return  "wartosc jest za krotka - minumum  znaki"
+    if (stringValue.length<3)  return  "wartosc jest za krotka - minumum 3  znaki"
     if (!stringValue) return "Pole nie może być puste";
     if (stringValue.length > 50) return "wartosc jest za długa - maks 50 znaków";
 }

@@ -83,6 +83,7 @@ export default function AmountProvider({ children }) {
         console.log("Updating amount with data:", updatedAmount);
 
         try {
+            console.log("Updating amount with data:", JSON.stringify(updatedAmount));
             const response = await editAmountAction(`/expenses/${updatedAmount.id}`, {
                 method: 'PUT',
                 body: updatedAmount,
