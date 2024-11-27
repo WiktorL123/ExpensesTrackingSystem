@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useLayoutEffect, useState } from "react";
 import { v4 } from "uuid";
-import { useFetchData } from "@/app/Hooks/useFetchData";
+
 import { useApiActions } from "@/app/Hooks/useApiActions";
 
 const AmountsContext = createContext();
@@ -16,15 +16,32 @@ export default function AmountProvider({ children }) {
     const [editingAmount, setEditingAmount] = useState(null);
     const [notificationMessage, setNotificationMessage] = useState('');
     const [showNotification, setShowNotification] = useState(false);
-
-    const { data, error, loading } = useFetchData('http://localhost:8080/expenses');
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
     const { performAction: addAmountAction } = useApiActions('http://localhost:8080');
     const { performAction: editAmountAction } = useApiActions('http://localhost:8080');
     const { performAction: removeAmountAction } = useApiActions('http://localhost:8080');
 
-    useEffect(() => {
-        if (data) setAmounts(data);
-    }, [data]);
+    const BASE_URL = 'http://localhost:8080/expenses';
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch(BASE_URL)
+            if (!res.ok) throw new Error(res.message)
+            const data = await res.json()
+            setAmounts(data)
+        }
+        catch (error) {
+            setError(error)
+            console.error(error)
+        }
+        finally {
+            setLoading(false);
+        }
+    }
+    useEffect(()=>{
+        fetchData()
+    }, [])
 
     useEffect(() => {
         localStorage.setItem('amounts', JSON.stringify(amounts));
@@ -42,17 +59,25 @@ export default function AmountProvider({ children }) {
     }, [notificationMessage]);
 
     const addAmount = async (newAmount) => {
+        console.log('Dodawanie nowego wydatku:', newAmount);
+        console.log('Aktualna lista wydatków:', amounts);
         try {
             const response = await addAmountAction('/expenses', {
                 method: 'POST',
                 body: newAmount,
             });
-            setAmounts((prev) => [...prev, response]);
+            setAmounts((prev) => {
+                if (prev.some(amount => amount.id === newAmount.id)) {
+                    console.log("Detected duplicate ID:", newAmount.id);
+                    return prev
+                }
+                return [...prev, newAmount];
+            })
             setNotificationMessage("Nowy wydatek został dodany.");
         } catch {
             setNotificationMessage("Wystąpił błąd podczas dodawania wydatku.");
         }
-    };
+    }
 
     const updateAmount = async (updatedAmount) => {
         console.log("Updating amount with data:", updatedAmount);
@@ -106,6 +131,7 @@ export default function AmountProvider({ children }) {
             date: date ? new Date(date).toISOString().split('T')[0] : undefined,
             description,
         };
+        console.log("Generated ID: ", newAmount.id);
         addAmount(newAmount);
     };
 

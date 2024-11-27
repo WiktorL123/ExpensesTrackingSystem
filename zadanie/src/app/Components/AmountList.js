@@ -1,7 +1,7 @@
 'use client';
 import Amount from "@/app/Components/Amount";
 import {useAmountsContext} from "@/app/providers/AmountProvider";
-import {useLayoutEffect, useState} from "react";
+import {useEffect, useLayoutEffect, useState} from "react";
 import NotificationModal from "@/app/Components/NotificationModal";
 import {theme} from "../../../tailwind.config";
 
@@ -9,7 +9,7 @@ export default function AmountList() {
     const [highlightedAmount, setHighlightedAmount] = useState(null);
     const {removeAmount, setSelectedAmount, setEditingAmount, filteredAmounts, notificationMessage, showNotification} = useAmountsContext();
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (filteredAmounts.length > 0) {
             const latestAmount = filteredAmounts.reduce((latest, current) => {
                 return new Date(current.date) > new Date(latest.date) ? current : latest;
@@ -30,9 +30,9 @@ export default function AmountList() {
                 />
             )}
             <div className="flex flex-wrap gap-4 justify-center">
-                {filteredAmounts.map((amount) => (
+                {filteredAmounts.map((amount, index) => (
                     <Amount
-                        key={amount.id}
+                        key={amount.id }
                         {...amount}
                         isHighlighted={highlightedAmount?.id === amount.id}
                         onRemove={removeAmount}
