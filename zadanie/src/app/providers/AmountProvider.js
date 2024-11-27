@@ -17,17 +17,11 @@ export default function AmountProvider({ children }) {
     const [notificationMessage, setNotificationMessage] = useState('');
     const [showNotification, setShowNotification] = useState(false);
 
-    // Fetch data hook
-    const { data, error, loading, refetch } = useFetchData('http://localhost:3000/expenses');
+    const { data, error, loading } = useFetchData('http://localhost:8080/expenses');
+    const { performAction: addAmountAction } = useApiActions('http://localhost:8080');
+    const { performAction: editAmountAction } = useApiActions('http://localhost:8080');
+    const { performAction: removeAmountAction } = useApiActions('http://localhost:8080');
 
-    // API actions hooks
-    const { performAction: addAmountAction } = useApiActions('http://localhost:3000/expenses', {
-        method: 'POST',
-    });
-    const { performAction: editAmountAction } = useApiActions(null);
-    const { performAction: removeAmountAction } = useApiActions(null);
-
-    // Synchronize fetched data
     useEffect(() => {
         if (data) setAmounts(data);
     }, [data]);
@@ -42,14 +36,17 @@ export default function AmountProvider({ children }) {
             const timer = setTimeout(() => {
                 setShowNotification(false);
                 setNotificationMessage('');
-            }, 1000);
+            }, 3000);
             return () => clearTimeout(timer);
         }
     }, [notificationMessage]);
 
     const addAmount = async (newAmount) => {
         try {
-            const response = await addAmountAction(newAmount);
+            const response = await addAmountAction('/expenses', {
+                method: 'POST',
+                body: newAmount,
+            });
             setAmounts((prev) => [...prev, response]);
             setNotificationMessage("Nowy wydatek został dodany.");
         } catch {
@@ -58,17 +55,12 @@ export default function AmountProvider({ children }) {
     };
 
     const updateAmount = async (updatedAmount) => {
-        const formattedAmount = {
-            ...updatedAmount,
-            date: updatedAmount.date
-                ? new Date(updatedAmount.date).toISOString().split('T')[0]
-                : undefined,
-        };
+        console.log("Updating amount with data:", updatedAmount);
 
         try {
-            const response = await editAmountAction(`http://localhost:3000/expenses/${updatedAmount.id}`, {
+            const response = await editAmountAction(`/expenses/${updatedAmount.id}`, {
                 method: 'PUT',
-                body: JSON.stringify(formattedAmount),
+                body: updatedAmount,
             });
             setAmounts((prev) =>
                 prev.map((amount) => (amount.id === response.id ? response : amount))
@@ -81,7 +73,7 @@ export default function AmountProvider({ children }) {
 
     const removeAmount = async (id) => {
         try {
-            await removeAmountAction(`http://localhost:3000/expenses/${id}`, { method: 'DELETE' });
+            await removeAmountAction(`/expenses/${id}`, { method: 'DELETE' });
             setAmounts((prev) => prev.filter((amount) => amount.id !== id));
             setNotificationMessage("Wydatek został usunięty.");
         } catch {
@@ -90,7 +82,16 @@ export default function AmountProvider({ children }) {
     };
 
     const handleSaveEdit = (updatedAmount) => {
-        updateAmount(updatedAmount);
+        const formattedAmount = {
+            ...updatedAmount,
+            date: updatedAmount.date
+                ? (typeof updatedAmount.date === "string"
+                    ? updatedAmount.date
+                    : new Date(updatedAmount.date).toISOString().substring(0, 10))
+                : "",
+        }
+        updateAmount(formattedAmount);
+        console.log(formattedAmount)
         setEditingAmount(null);
     };
 
