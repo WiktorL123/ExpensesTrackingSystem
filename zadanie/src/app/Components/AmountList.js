@@ -1,7 +1,7 @@
 'use client';
 import Amount from "@/app/Components/Amount";
 import {useAmountsContext} from "@/app/providers/AmountProvider";
-import {useEffect, useLayoutEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import NotificationModal from "@/app/Components/NotificationModal";
 import {theme} from "../../../tailwind.config";
 
@@ -33,7 +33,7 @@ export default function AmountList() {
 
                 {filteredAmounts.map((amount, index) => (
                     <Amount
-                        key={amount.id }
+                        key={amount.id}
                         {...amount}
                         isHighlighted={highlightedAmount?.id === amount.id}
                         onRemove={removeAmount}

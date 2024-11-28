@@ -5,11 +5,11 @@ export default function NotificationModal({ message, onClose }) {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        setIsVisible(true); // Ustaw widoczność na "true" podczas montowania komponentu.
+        setIsVisible(true);
 
         const timer = setTimeout(() => {
-            setIsVisible(false); // Rozpocznij animację zamykania.
-            setTimeout(onClose, 500); // Wywołaj `onClose` po zakończeniu animacji.
+            setIsVisible(false);
+            setTimeout(onClose, 500);
         }, 3000);
 
         return () => clearTimeout(timer);
