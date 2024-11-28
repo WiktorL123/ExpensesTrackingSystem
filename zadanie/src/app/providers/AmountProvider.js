@@ -1,9 +1,6 @@
 'use client';
 
 import { createContext, useContext, useEffect, useLayoutEffect, useState } from "react";
-import { v4 } from "uuid";
-
-import { useApiActions } from "@/app/Hooks/useApiActions";
 
 const AmountsContext = createContext();
 
@@ -18,9 +15,6 @@ export default function AmountProvider({ children }) {
     const [showNotification, setShowNotification] = useState(false);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const { performAction: addAmountAction } = useApiActions('http://localhost:8080');
-    const { performAction: editAmountAction } = useApiActions('http://localhost:8080');
-    const { performAction: removeAmountAction } = useApiActions('http://localhost:8080');
 
     const BASE_URL = 'http://localhost:8080/expenses';
 
@@ -31,10 +25,9 @@ export default function AmountProvider({ children }) {
             if (!res.ok) throw new Error(res.message);
             const data = await res.json();
 
-            // Przechowywanie danych z prawdziwymi ID
             const amountsWithBackendId = data.map((item) => ({
                 ...item,
-                id: item.id,  // ID z backendu
+                id: item.id,
             }));
             setAmounts(amountsWithBackendId);
         } catch (error) {
@@ -66,22 +59,30 @@ export default function AmountProvider({ children }) {
 
     const addAmount = async (newAmount) => {
         console.log('Dodawanie nowego wydatku:', newAmount);
-        console.log('Aktualna lista wydatków:', amounts);
         try {
-            const response = await addAmountAction('/expenses', {
+            const response = await fetch(BASE_URL, {
                 method: 'POST',
-                body: newAmount,
+                body: JSON.stringify(newAmount),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             });
+
+            const savedAmount = await response.json();  // Odbieramy odpowiedź z backendu
+
+            // Sprawdzamy, czy ID już istnieje, aby uniknąć duplikatów
             setAmounts((prev) => {
-                if (prev.some(amount => amount.id === newAmount.id)) {
-                    console.log("Detected duplicate ID:", newAmount.id);
+                if (prev.some(amount => amount.id === savedAmount.id)) {
+                    console.log("Detected duplicate ID:", savedAmount.id);
                     return prev;
                 }
-                return [...prev, response];  // Użyj odpowiedzi z backendu, aby uzyskać prawdziwe ID
+                return [...prev, savedAmount];  // Dodajemy wydatek z prawdziwym ID
             });
+
             setNotificationMessage("Nowy wydatek został dodany.");
-        } catch {
+        } catch (error) {
             setNotificationMessage("Wystąpił błąd podczas dodawania wydatku.");
+            console.error(error);
         }
     };
 
@@ -89,14 +90,20 @@ export default function AmountProvider({ children }) {
         console.log("Updating amount with data:", updatedAmount);
 
         try {
-            // Wysyłamy prawdziwe ID do backendu
-            const response = await editAmountAction(`/expenses/${updatedAmount.id}`, {
+            const response = await fetch(`${BASE_URL}/${updatedAmount.id}`, {
                 method: 'PUT',
-                body: updatedAmount,
+                body: JSON.stringify(updatedAmount),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             });
+
+            const updatedData = await response.json();  // Odbieramy zaktualizowaną odpowiedź
+
             setAmounts((prev) =>
-                prev.map((amount) => (amount.id === response.id ? response : amount))
+                prev.map((amount) => (amount.id === updatedData.id ? updatedData : amount))
             );
+
             setNotificationMessage("Wydatek został zaktualizowany.");
         } catch {
             setNotificationMessage("Błąd podczas aktualizacji wydatku.");
@@ -105,7 +112,9 @@ export default function AmountProvider({ children }) {
 
     const removeAmount = async (id) => {
         try {
-            await removeAmountAction(`/expenses/${id}`, { method: 'DELETE' });
+            await fetch(`${BASE_URL}/${id}`, {
+                method: 'DELETE',
+            });
             setAmounts((prev) => prev.filter((amount) => amount.id !== id));
             setNotificationMessage("Wydatek został usunięty.");
         } catch {
@@ -128,17 +137,33 @@ export default function AmountProvider({ children }) {
 
     const handleCancelEdit = () => setEditingAmount(null);
 
-    const handleNewAmount = (title, amount, category, date, description) => {
+    const handleNewAmount = async (title, amount, category, date, description) => {
         const newAmount = {
-            id: v4(),  // Generowanie UUID tylko do UI
             title,
             amount,
             category,
             date: date ? new Date(date).toISOString().split('T')[0] : undefined,
             description,
         };
-        console.log("Generated ID for UI: ", newAmount.id);
-        addAmount(newAmount);
+
+        try {
+            const response = await fetch(BASE_URL, {
+                method: 'POST',
+                body: JSON.stringify(newAmount),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const savedAmount = await response.json();  // Odbieramy odpowiedź z backendu
+
+            setAmounts((prev) => [...prev, savedAmount]);
+
+            setNotificationMessage("Nowy wydatek został dodany.");
+        } catch (error) {
+            setNotificationMessage("Wystąpił błąd podczas dodawania wydatku.");
+            console.error(error);
+        }
     };
 
     const handleBackdropClick = (event) => {

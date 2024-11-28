@@ -52,7 +52,8 @@ function validateAmount(amount) {
 
 
 export default function EditAmountForm() {
-    const {editingAmount, handleSaveEdit, handleCancelEdit, setEditingAmount} = useAmountsContext()
+    const {editingAmount, handleSaveEdit, handleCancelEdit, setEditingAmount, handleAmount} = useAmountsContext()
+
 
 
     const [formState, setFormState] = useState({
@@ -79,7 +80,7 @@ export default function EditAmountForm() {
             };
             handleSaveEdit(updatedAmount);
         }
-    };
+    }
 
 
     const handleChange = (field, value) => {

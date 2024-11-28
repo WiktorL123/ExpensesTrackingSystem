@@ -5,14 +5,25 @@ export default function NotificationModal({ message, onClose }) {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
+        if (!message) return;
+
         setIsVisible(true);
 
+        let isMounted = true;
+
         const timer = setTimeout(() => {
-            setIsVisible(false);
-            setTimeout(onClose, 500);
+            if (isMounted) {
+                setIsVisible(false);
+                setTimeout(() => {
+                    if (isMounted) onClose();
+                }, 500);
+            }
         }, 3000);
 
-        return () => clearTimeout(timer);
+        return () => {
+            isMounted = false;
+            clearTimeout(timer);
+        };
     }, [message, onClose]);
 
     return (
@@ -29,7 +40,10 @@ export default function NotificationModal({ message, onClose }) {
                 <p>{message}</p>
                 <button
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-                    onClick={() => setIsVisible(false)}
+                    onClick={() => {
+                        setIsVisible(false);
+                        setTimeout(onClose, 500);
+                    }}
                 >
                     X
                 </button>
