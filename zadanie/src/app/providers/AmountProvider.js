@@ -25,24 +25,6 @@ export default function AmountProvider({ children }) {
     const BASE_URL = 'http://localhost:8080/expenses';
 
 
-    const generateFakeAmounts = (count) => {
-        const fakeAmounts = [];
-        for (let i = 0; i < count; i++) {
-            fakeAmounts.push({
-                id: faker.datatype.uuid(),
-                title: faker.commerce.productName(),
-                amount: faker.number.int({min: 10, max: 5000}),
-                category: faker.commerce.department(),
-                date: faker.date.past().toISOString(),
-                description: faker.lorem.sentence(),
-            });
-        }
-        setAmounts(fakeAmounts);
-    };
-
-    useEffect(() => {
-        generateFakeAmounts(100)
-    }, [])
 
     const fetchData = async () => {
         setLoading(true);
@@ -201,7 +183,7 @@ export default function AmountProvider({ children }) {
     const categories = [...new Set(amounts.map((item) => item.category))];
     const filteredAmounts = amounts.filter(amount => {
         const matchesCategory = filters.category==='all' || amount.category===filters.category;
-        const matchesMaxAmount = filters.amount===0 || amount.amount >= parseFloat(filters.minAmount);
+        const matchesMaxAmount = filters.amount===0 || amount.amount <= parseFloat(filters.minAmount);
         const matchesMinAmount = filters.amount===0 || amount.amount >= parseFloat(filters.maxAmount);
 
         return matchesMaxAmount && matchesCategory && matchesMinAmount
