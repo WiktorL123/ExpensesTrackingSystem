@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useLayoutEffect, useState } from "react";
+import { faker } from '@faker-js/faker';
 
 const AmountsContext = createContext();
 
@@ -8,7 +9,12 @@ export const useAmountsContext = () => useContext(AmountsContext);
 
 export default function AmountProvider({ children }) {
     const [amounts, setAmounts] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState("all");
+    // const [selectedCategory, setSelectedCategory] = useState("all");
+    const [filters, setFilters] = useState({
+        category: "all",
+        minAmount: 0,
+        maxAmount: 0,
+    });
     const [selectedAmount, setSelectedAmount] = useState(null);
     const [editingAmount, setEditingAmount] = useState(null);
     const [notificationMessage, setNotificationMessage] = useState('');
@@ -17,6 +23,26 @@ export default function AmountProvider({ children }) {
     const [loading, setLoading] = useState(false);
 
     const BASE_URL = 'http://localhost:8080/expenses';
+
+
+    const generateFakeAmounts = (count) => {
+        const fakeAmounts = [];
+        for (let i = 0; i < count; i++) {
+            fakeAmounts.push({
+                id: faker.datatype.uuid(),
+                title: faker.commerce.productName(),
+                amount: faker.number({min: 10, max: 5000}),
+                category: faker.person
+                date: faker.date.past().toISOString(),
+                description: faker.lorem.sentence(),
+            });
+        }
+        setAmounts(fakeAmounts);
+    };
+
+    useEffect(() => {
+        generateFakeAmounts(100)
+    }, [])
 
     const fetchData = async () => {
         setLoading(true);
@@ -68,15 +94,15 @@ export default function AmountProvider({ children }) {
                 },
             });
 
-            const savedAmount = await response.json();  // Odbieramy odpowiedź z backendu
+            const savedAmount = await response.json()
 
-            // Sprawdzamy, czy ID już istnieje, aby uniknąć duplikatów
+
             setAmounts((prev) => {
                 if (prev.some(amount => amount.id === savedAmount.id)) {
                     console.log("Detected duplicate ID:", savedAmount.id);
                     return prev;
                 }
-                return [...prev, savedAmount];  // Dodajemy wydatek z prawdziwym ID
+                return [...prev, savedAmount];
             });
 
             setNotificationMessage("Nowy wydatek został dodany.");
@@ -98,7 +124,7 @@ export default function AmountProvider({ children }) {
                 },
             });
 
-            const updatedData = await response.json();  // Odbieramy zaktualizowaną odpowiedź
+            const updatedData = await response.json()
 
             setAmounts((prev) =>
                 prev.map((amount) => (amount.id === updatedData.id ? updatedData : amount))
@@ -173,9 +199,20 @@ export default function AmountProvider({ children }) {
     };
 
     const categories = [...new Set(amounts.map((item) => item.category))];
-    const filteredAmounts = selectedCategory === "all"
-        ? amounts
-        : amounts.filter((item) => item.category === selectedCategory);
+    const filteredAmounts = amounts.filter(amount => {
+        const matchesCategory = filters.category==='all' || amount.category===filters.category;
+        const matchesMaxAmount = filters.amount===0 || amount.amount >= parseFloat(filters.minAmount);
+        const matchesMinAmount = filters.amount===0 || amount.amount >= parseFloat(filters.maxAmount);
+
+        return matchesMaxAmount && matchesCategory && matchesMinAmount
+    });
+    const updateFilter = (key, value) => {
+        setFilters(prev => ({
+            ...prev,
+            [key]: value
+        }));
+    };
+
 
     return (
         <AmountsContext.Provider
@@ -183,10 +220,8 @@ export default function AmountProvider({ children }) {
                 filteredAmounts,
                 categories,
                 amounts,
-                selectedCategory,
                 selectedAmount,
                 editingAmount,
-                setSelectedCategory,
                 setSelectedAmount,
                 setEditingAmount,
                 handleBackdropClick,
@@ -200,6 +235,9 @@ export default function AmountProvider({ children }) {
                 showNotification,
                 loading,
                 error,
+                updateFilter,
+                filters,
+                setFilters
             }}
         >
             {children}

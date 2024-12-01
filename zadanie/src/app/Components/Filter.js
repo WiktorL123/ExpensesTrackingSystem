@@ -2,18 +2,21 @@
 import React from 'react';
 import { useAmountsContext } from "@/app/providers/AmountProvider";
 
+
+
 export default function Filter() {
-    const { selectedCategory, setSelectedCategory, categories } = useAmountsContext();
+    const {updateFilter, filters, categories} = useAmountsContext();
+
+
 
     return (
         <div>
-            <label  htmlFor="category-filter">Filtruj według kategorii:</label>
+            <label htmlFor="category-filter">Filtruj według kategorii:</label>
             <select
                 id="category-filter"
-                value={selectedCategory}
+                value={filters.category}
                 onChange={e => {
-                   console.log(typeof selectedCategory)
-                    setSelectedCategory(e.target.value);
+                   updateFilter('category', e.target.value);
                 }}
             >
                 <option value="all">Wszystkie</option>
@@ -22,7 +25,11 @@ export default function Filter() {
                         {category}
                     </option>
                 ))}
-            </select>
+            </select><br/>
+            <label htmlFor={'minAmount'}>minimalna cena</label>
+            <input id={'minAmount'} value={filters.minAmount} onChange={e=>updateFilter('minAmount', e.target.value)}/><br/>
+            <label htmlFor={'maxAmount'}>maksymalna cena</label>
+            <input id={'maxAmount'} value={filters.maxAmount} onChange={e=>updateFilter('maxAmount', e.target.value)}/>
         </div>
     );
 }
