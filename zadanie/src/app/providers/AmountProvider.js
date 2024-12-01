@@ -12,8 +12,8 @@ export default function AmountProvider({ children }) {
     // const [selectedCategory, setSelectedCategory] = useState("all");
     const [filters, setFilters] = useState({
         category: "all",
-        minAmount: 0,
-        maxAmount: 0,
+        minAmount: '',
+        maxAmount: '',
     });
     const [selectedAmount, setSelectedAmount] = useState(null);
     const [editingAmount, setEditingAmount] = useState(null);
@@ -163,7 +163,7 @@ export default function AmountProvider({ children }) {
                 },
             });
 
-            const savedAmount = await response.json();  // Odbieramy odpowiedź z backendu
+            const savedAmount = await response.json();
 
             setAmounts((prev) => [...prev, savedAmount]);
 
@@ -182,12 +182,13 @@ export default function AmountProvider({ children }) {
 
     const categories = [...new Set(amounts.map((item) => item.category))];
     const filteredAmounts = amounts.filter(amount => {
-        const matchesCategory = filters.category==='all' || amount.category===filters.category;
-        const matchesMaxAmount = filters.amount===0 || amount.amount <= parseFloat(filters.minAmount);
-        const matchesMinAmount = filters.amount===0 || amount.amount >= parseFloat(filters.maxAmount);
+        const matchesCategory = filters.category === 'all' || amount.category === filters.category;
+        const matchesMaxAmount = !filters.maxAmount || amount.amount <= parseFloat(filters.maxAmount);
+        const matchesMinAmount = !filters.minAmount || amount.amount >= parseFloat(filters.minAmount);
 
-        return matchesMaxAmount && matchesCategory && matchesMinAmount
+        return matchesCategory && matchesMaxAmount && matchesMinAmount;
     });
+
     const updateFilter = (key, value) => {
         setFilters(prev => ({
             ...prev,

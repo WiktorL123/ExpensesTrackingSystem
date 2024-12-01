@@ -22,13 +22,13 @@ export default function AmountList() {
         showNotification,
     } = useAmountsContext();
 
-    // Indeksy elementów na bieżącej stronie
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const currentAmounts = filteredAmounts.slice(startIndex, endIndex);
 
-    // Wyznaczanie najnowszego wydatku do podświetlenia
+
     useEffect(() => {
+        console.log(filteredAmounts)
         if (filteredAmounts.length > 0) {
             const latestAmount = filteredAmounts.reduce((latest, current) => {
                 return new Date(current.date) > new Date(latest.date) ? current : latest;
@@ -46,9 +46,8 @@ export default function AmountList() {
         setEditingAmount(amount);
     };
 
-    // Renderowanie kafelków w wierszu
     const renderRow = ({ index, style }) => {
-        const start = index * 3; // Liczba kafelków w wierszu (tu: 3)
+        const start = index * 3;
         const end = start + 3;
         const rowItems = currentAmounts.slice(start, end);
 
@@ -71,10 +70,10 @@ export default function AmountList() {
         );
     };
 
-    // Obliczenie liczby wierszy
+
     const rowCount = Math.ceil(currentAmounts.length / 3);
 
-    // Obsługa braku danych
+
     if (!filteredAmounts.length)
         return (
             <div
@@ -93,13 +92,13 @@ export default function AmountList() {
                 />
             )}
 
-            {/* Lista wirtualna */}
+
             <div className="flex flex-col items-center">
                 <List
-                    height={400} // Wysokość widocznej części listy
-                    itemCount={rowCount} // Liczba wierszy (nie elementów)
-                    itemSize={itemHeight + gap} // Wysokość każdego wiersza z odstępem
-                    width="100%" // Szerokość listy
+                    height={400}
+                    itemCount={rowCount}
+                    itemSize={itemHeight + gap}
+                    width="100%"
                 >
                     {renderRow}
                 </List>
