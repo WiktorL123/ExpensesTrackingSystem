@@ -31,8 +31,8 @@ export default function AmountProvider({ children }) {
             fakeAmounts.push({
                 id: faker.datatype.uuid(),
                 title: faker.commerce.productName(),
-                amount: faker.number({min: 10, max: 5000}),
-                category: faker.person
+                amount: faker.number.int({min: 10, max: 5000}),
+                category: faker.commerce.department(),
                 date: faker.date.past().toISOString(),
                 description: faker.lorem.sentence(),
             });
