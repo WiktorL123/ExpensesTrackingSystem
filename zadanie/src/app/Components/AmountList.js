@@ -27,7 +27,7 @@ export default function AmountList() {
 
 
     useEffect(() => {
-        console.log(filteredAmounts)
+        console.log('render4')
         if (filteredAmounts.length > 0) {
             const latestAmount = filteredAmounts.reduce((latest, current) => {
                 return new Date(current.date) > new Date(latest.date) ? current : latest;
@@ -49,7 +49,6 @@ export default function AmountList() {
         const start = index * 3;
         const end = start + 3;
         const rowItems = currentAmounts.slice(start, end);
-        filteredAmounts.forEach((currentAmount) => {console.log('id', currentAmount.id)})
         return (
             <div
                 style={{ ...style, display: "flex", gap: `${gap}px`, justifyContent: "center" }}

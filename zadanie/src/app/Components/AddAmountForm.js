@@ -28,18 +28,20 @@ const initialValues = {
     description: ''
 };
 export default function AddAmountForm() {
-    const {addAmount} = useAmountsContext()
+    const {handleNewAmount} = useAmountsContext()
 
     const handleSubmit = (values, { resetForm }) => {
-        addAmount(
-            values.title,
-            values.amount,
-            values.category.toLowerCase(),
-            values.date,
-            values.description
-        );
+        console.log('adding:', values); // Dodatkowy log do debugowania
+        handleNewAmount({
+            title: values.title,
+            amount: values.amount,
+            category: values.category.toLowerCase(),
+            date: values.date,
+            description: values.description,
+        });
         resetForm();
     };
+
 
     return (
         <Formik

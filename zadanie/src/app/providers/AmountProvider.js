@@ -40,14 +40,17 @@ export default function AmountProvider({ children }) {
     }, []);
 
     useEffect(() => {
+        console.log('render2')
         fetchData();
     }, [fetchData, amountAction]);
 
     useEffect(() => {
+        console.log('render2')
         localStorage.setItem('amounts', JSON.stringify(amounts));
     }, [amounts]);
 
     useLayoutEffect(() => {
+        console.log('render3')
         if (notificationMessage) {
             setShowNotification(true);
             const timer = setTimeout(() => {
@@ -181,7 +184,7 @@ export default function AmountProvider({ children }) {
                 setSelectedAmount,
                 setEditingAmount,
                 handleBackdropClick,
-                addAmount,
+                handleNewAmount: addAmount,
                 removeAmount,
                 updateAmount,
                 handleSaveEdit,
