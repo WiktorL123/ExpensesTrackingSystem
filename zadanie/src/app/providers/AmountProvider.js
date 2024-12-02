@@ -1,7 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useLayoutEffect, useState } from "react";
-import { faker } from '@faker-js/faker';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 
 const AmountsContext = createContext();
 
@@ -9,9 +8,8 @@ export const useAmountsContext = () => useContext(AmountsContext);
 
 export default function AmountProvider({ children }) {
     const [amounts, setAmounts] = useState([]);
-    // const [selectedCategory, setSelectedCategory] = useState("all");
     const [filters, setFilters] = useState({
-        category: "all",
+        category: 'all',
         minAmount: '',
         maxAmount: '',
     });
@@ -21,34 +19,29 @@ export default function AmountProvider({ children }) {
     const [showNotification, setShowNotification] = useState(false);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [amountAction, setAmountAction] = useState(false);
 
     const BASE_URL = 'http://localhost:8080/expenses';
 
-
-
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
+        setError(null);
         try {
             const res = await fetch(BASE_URL);
-            if (!res.ok) throw new Error(res.message);
+            if (!res.ok) throw new Error('Failed to fetch expenses');
             const data = await res.json();
-
-            const amountsWithBackendId = data.map((item) => ({
-                ...item,
-                id: item.id,
-            }));
+            const amountsWithBackendId = data.map((item) => ({ ...item, id: item.id }));
             setAmounts(amountsWithBackendId);
-        } catch (error) {
-            setError(error);
-            console.error(error);
+        } catch (err) {
+            setError(err.message);
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData, amountAction]);
 
     useEffect(() => {
         localStorage.setItem('amounts', JSON.stringify(amounts));
@@ -65,8 +58,10 @@ export default function AmountProvider({ children }) {
         }
     }, [notificationMessage]);
 
-    const addAmount = async (newAmount) => {
-        console.log('Dodawanie nowego wydatku:', newAmount);
+    const addAmount = useCallback(async (newAmount) => {
+        console.log('sending: ', newAmount)
+        setLoading(true);
+        setError(null);
         try {
             const response = await fetch(BASE_URL, {
                 method: 'POST',
@@ -76,27 +71,23 @@ export default function AmountProvider({ children }) {
                 },
             });
 
-            const savedAmount = await response.json()
+            if (!response.ok) throw new Error('Failed to add amount');
 
-
-            setAmounts((prev) => {
-                if (prev.some(amount => amount.id === savedAmount.id)) {
-                    console.log("Detected duplicate ID:", savedAmount.id);
-                    return prev;
-                }
-                return [...prev, savedAmount];
-            });
-
-            setNotificationMessage("Nowy wydatek został dodany.");
-        } catch (error) {
-            setNotificationMessage("Wystąpił błąd podczas dodawania wydatku.");
-            console.error(error);
+            const savedAmount = await response.json();
+            setAmounts((prev) => [...prev.filter((amount) => amount.id !== savedAmount.id), savedAmount]);
+            setNotificationMessage('Nowy wydatek został dodany.');
+        } catch (err) {
+            setError(err.message);
+            setNotificationMessage('Wystąpił błąd podczas dodawania wydatku.');
+        } finally {
+            setLoading(false);
+            setAmountAction((prev) => !prev);
         }
-    };
+    }, []);
 
-    const updateAmount = async (updatedAmount) => {
-        console.log("Updating amount with data:", updatedAmount);
-
+    const updateAmount = useCallback(async (updatedAmount) => {
+        setLoading(true);
+        setError(null);
         try {
             const response = await fetch(`${BASE_URL}/${updatedAmount.id}`, {
                 method: 'PUT',
@@ -106,73 +97,56 @@ export default function AmountProvider({ children }) {
                 },
             });
 
-            const updatedData = await response.json()
+            if (!response.ok) throw new Error('Failed to update amount');
 
+            const updatedData = await response.json();
             setAmounts((prev) =>
                 prev.map((amount) => (amount.id === updatedData.id ? updatedData : amount))
             );
-
-            setNotificationMessage("Wydatek został zaktualizowany.");
-        } catch {
-            setNotificationMessage("Błąd podczas aktualizacji wydatku.");
+            setNotificationMessage('Wydatek został zaktualizowany.');
+        } catch (err) {
+            setError(err.message);
+            setNotificationMessage('Błąd podczas aktualizacji wydatku.');
+        } finally {
+            setLoading(false);
+            setAmountAction((prev) => !prev);
         }
-    };
+    }, []);
 
-    const removeAmount = async (id) => {
+    const removeAmount = useCallback(async (id) => {
+        setLoading(true);
+        setError(null);
         try {
-            await fetch(`${BASE_URL}/${id}`, {
+            const response = await fetch(`${BASE_URL}/${id}`, {
                 method: 'DELETE',
             });
+
+            if (!response.ok) throw new Error('Failed to delete amount');
+
             setAmounts((prev) => prev.filter((amount) => amount.id !== id));
-            setNotificationMessage("Wydatek został usunięty.");
-        } catch {
-            setNotificationMessage("Wystąpił błąd podczas usuwania wydatku.");
+            setNotificationMessage('Wydatek został usunięty.');
+        } catch (err) {
+            setError(err.message);
+            setNotificationMessage('Wystąpił błąd podczas usuwania wydatku.');
+        } finally {
+            setLoading(false);
         }
-    };
+    }, []);
 
     const handleSaveEdit = (updatedAmount) => {
         const formattedAmount = {
             ...updatedAmount,
             date: updatedAmount.date
-                ? (typeof updatedAmount.date === "string"
+                ? (typeof updatedAmount.date === 'string'
                     ? updatedAmount.date
                     : new Date(updatedAmount.date).toISOString().substring(0, 10))
-                : "",
+                : '',
         };
-        updateAmount(formattedAmount);  // Używamy prawdziwego ID w tej funkcji
+        updateAmount(formattedAmount);
         setEditingAmount(null);
     };
 
     const handleCancelEdit = () => setEditingAmount(null);
-
-    const handleNewAmount = async (title, amount, category, date, description) => {
-        const newAmount = {
-            title,
-            amount,
-            category,
-            date: date ? new Date(date).toISOString().split('T')[0] : undefined,
-            description,
-        };
-
-        try {
-            const response = await fetch(BASE_URL, {
-                method: 'POST',
-                body: JSON.stringify(newAmount),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            const savedAmount = await response.json();
-
-            setAmounts((prev) => [...prev, savedAmount]);
-
-            setNotificationMessage("Nowy wydatek został dodany.");
-        } catch (error) {
-            setNotificationMessage("Wystąpił błąd podczas dodawania wydatku.");
-            console.error(error);
-        }
-    };
 
     const handleBackdropClick = (event) => {
         if (event.target === event.currentTarget) {
@@ -181,7 +155,7 @@ export default function AmountProvider({ children }) {
     };
 
     const categories = [...new Set(amounts.map((item) => item.category))];
-    const filteredAmounts = amounts.filter(amount => {
+    const filteredAmounts = amounts.filter((amount) => {
         const matchesCategory = filters.category === 'all' || amount.category === filters.category;
         const matchesMaxAmount = !filters.maxAmount || amount.amount <= parseFloat(filters.maxAmount);
         const matchesMinAmount = !filters.minAmount || amount.amount >= parseFloat(filters.minAmount);
@@ -190,12 +164,11 @@ export default function AmountProvider({ children }) {
     });
 
     const updateFilter = (key, value) => {
-        setFilters(prev => ({
+        setFilters((prev) => ({
             ...prev,
-            [key]: value
+            [key]: value,
         }));
     };
-
 
     return (
         <AmountsContext.Provider
@@ -213,14 +186,13 @@ export default function AmountProvider({ children }) {
                 updateAmount,
                 handleSaveEdit,
                 handleCancelEdit,
-                handleNewAmount,
                 notificationMessage,
                 showNotification,
                 loading,
                 error,
                 updateFilter,
                 filters,
-                setFilters
+                setFilters,
             }}
         >
             {children}

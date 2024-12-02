@@ -28,10 +28,10 @@ const initialValues = {
     description: ''
 };
 export default function AddAmountForm() {
-    const {handleNewAmount} = useAmountsContext()
+    const {addAmount} = useAmountsContext()
 
     const handleSubmit = (values, { resetForm }) => {
-        handleNewAmount(
+        addAmount(
             values.title,
             values.amount,
             values.category.toLowerCase(),

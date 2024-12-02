@@ -11,7 +11,6 @@ export default function AmountList() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
     const itemHeight = 160;
-    const itemWidth = 300;
     const gap = 16;
     const {
         removeAmount,
@@ -50,13 +49,14 @@ export default function AmountList() {
         const start = index * 3;
         const end = start + 3;
         const rowItems = currentAmounts.slice(start, end);
-
+        filteredAmounts.forEach((currentAmount) => {console.log('id', currentAmount.id)})
         return (
             <div
                 style={{ ...style, display: "flex", gap: `${gap}px`, justifyContent: "center" }}
                 key={`row-${index}`}
             >
                 {rowItems.map((amount) => (
+
                     <Amount
                         key={amount.id}
                         {...amount}
@@ -103,7 +103,7 @@ export default function AmountList() {
                     {renderRow}
                 </List>
 
-                {/* Paginacja */}
+
                 <Pagination
                     totalItems={filteredAmounts.length}
                     itemsPerPage={itemsPerPage}
