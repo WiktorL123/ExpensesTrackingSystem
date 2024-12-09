@@ -1,17 +1,17 @@
-import { FixedSizeList as List } from "react-window";
 import { useAmountsContext } from "@/app/providers/AmountProvider";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import NotificationModal from "@/app/Components/NotificationModal";
 import { theme } from "../../../tailwind.config";
 import Amount from "@/app/Components/Amount";
 import Pagination from "@/app/Components/Pagination";
 
 export default function AmountList() {
+    console.log("[AmountList] Render start");
+
     const [highlightedAmount, setHighlightedAmount] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
-    const itemHeight = 160;
-    const gap = 16;
+
     const {
         removeAmount,
         setSelectedAmount,
@@ -23,57 +23,47 @@ export default function AmountList() {
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentAmounts = filteredAmounts.slice(startIndex, endIndex);
 
+    const currentAmounts = useMemo(() => {
+        const sliced = filteredAmounts.slice(startIndex, endIndex);
+        console.log("[currentAmounts] Sliced amounts:", sliced);
+        return sliced;
+    }, [filteredAmounts, startIndex, endIndex]);
 
     useEffect(() => {
-        console.log('render4')
         if (filteredAmounts.length > 0) {
+            console.log("[useEffect] Checking for highlighted amount");
             const latestAmount = filteredAmounts.reduce((latest, current) => {
                 return new Date(current.date) > new Date(latest.date) ? current : latest;
             }, filteredAmounts[0]);
-            setHighlightedAmount(latestAmount);
-        }
-    }, [filteredAmounts]);
 
+            if (highlightedAmount?.id !== latestAmount.id) {
+                setHighlightedAmount(latestAmount);
+                console.log("[useEffect] Highlighted amount set to:", latestAmount);
+            }
+        } else {
+            console.log("[useEffect] No amounts to highlight");
+            setHighlightedAmount(null);
+        }
+    }, [filteredAmounts, highlightedAmount]);
 
     const handleShowAmount = (amount) => {
+        console.log("[handleShowAmount] Showing amount:", amount);
         setSelectedAmount(amount);
-    }
+    };
 
     const handleEditAmount = (amount) => {
+        console.log("[handleEditAmount] Editing amount:", amount);
         setEditingAmount(amount);
     };
 
-    const renderRow = ({ index, style }) => {
-        const start = index * 3;
-        const end = start + 3;
-        const rowItems = currentAmounts.slice(start, end);
-        return (
-            <div
-                style={{ ...style, display: "flex", gap: `${gap}px`, justifyContent: "center" }}
-                key={`row-${index}`}
-            >
-                {rowItems.map((amount) => (
-
-                    <Amount
-                        key={amount.id}
-                        {...amount}
-                        isHighlighted={highlightedAmount?.id === amount.id}
-                        onRemove={removeAmount}
-                        onShow={() => handleShowAmount(amount)}
-                        onEdit={() => handleEditAmount(amount)}
-                    />
-                ))}
-            </div>
-        );
+    const handleCloseNotification = () => {
+        console.log("[handleCloseNotification] Closing notification");
+        setSelectedAmount(null);
     };
 
-
-    const rowCount = Math.ceil(currentAmounts.length / 3);
-
-
-    if (!filteredAmounts.length)
+    if (!filteredAmounts.length) {
+        console.log("[AmountList] No filtered amounts to display");
         return (
             <div
                 className={`text-center ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}
@@ -81,33 +71,38 @@ export default function AmountList() {
                 Brak wydatków do wyświetlenia.
             </div>
         );
+    }
+
+    console.log("[AmountList] Render complete");
 
     return (
         <div className={`p-4 ${theme === "dark" ? "bg-gray-900" : "bg-white"}`}>
             {showNotification && (
-                <NotificationModal
-                    message={notificationMessage}
-                    onClose={() => setSelectedAmount(null)}
-                />
+                <NotificationModal message={notificationMessage} onClose={handleCloseNotification} />
             )}
 
-
             <div className="flex flex-col items-center">
-                <List
-                    height={400}
-                    itemCount={rowCount}
-                    itemSize={itemHeight + gap}
-                    width="100%"
-                >
-                    {renderRow}
-                </List>
-
+                <div className="grid grid-cols-1 gap-4 w-full">
+                    {currentAmounts.map((amount) => (
+                        <Amount
+                            key={amount.id}
+                            {...amount}
+                            isHighlighted={highlightedAmount?.id === amount.id}
+                            onRemove={removeAmount}
+                            onShow={() => handleShowAmount(amount)}
+                            onEdit={() => handleEditAmount(amount)}
+                        />
+                    ))}
+                </div>
 
                 <Pagination
                     totalItems={filteredAmounts.length}
                     itemsPerPage={itemsPerPage}
                     currentPage={currentPage}
-                    onPageChange={setCurrentPage}
+                    onPageChange={(page) => {
+                        console.log("[Pagination] Page changed to:", page);
+                        setCurrentPage(page);
+                    }}
                 />
             </div>
         </div>
